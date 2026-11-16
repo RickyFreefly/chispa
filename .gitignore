@@ -1,0 +1,24 @@
+# Entornos y dependencias
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+
+# Modelos pesados (descargar aparte, ver README)
+src/xiaozhi-esp32-server/main/xiaozhi-server/models/
+pruebas-voz/modelos/
+
+# Datos y salidas locales
+*.log
+tmp/
+src/xiaozhi-esp32-server/main/xiaozhi-server/data/*.db
+pruebas-voz/salida/
+pruebas-voz/grabaciones/
+resultados_asr.csv
+
+# Copias de respaldo y temporales
+*.bak-*
+*.bak
+_to_delete/
+.DS_Store
+robot-ia-colombia.tar.gz

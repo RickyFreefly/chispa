@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHISPA · Expression Lab</title>
+<style>
+  :root { --lime:#B6FF39; --pink:#FF5C9A; --blue:#39A9FF; --coral:#FF4D4D; --line:rgba(255,255,255,.14); }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#000; color:#fff; font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; }
+  header { padding:14px 20px; border-bottom:1px solid var(--line); display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; } header h1 span { color:var(--lime); }
+  .banner { background:var(--lime); color:#000; font-weight:700; font-size:12px; letter-spacing:.04em; padding:4px 12px; border-radius:999px; }
+  header a { color:#cbd5e1; font-size:13px; margin-left:auto; }
+  main { display:grid; grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr); gap:18px; padding:18px 20px; max-width:1400px; margin:0 auto; }
+  .panel { border:1px solid var(--line); border-radius:20px; padding:14px; background:#050505; }
+  .stage { aspect-ratio:4/3; background:#000; border-radius:16px; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); }
+  #lab-stage { width:100%; height:100%; } #lab-pixels { image-rendering:pixelated; width:100%; height:100%; object-fit:contain; background:#000; }
+  #lab-stage[hidden], #lab-pixels[hidden] { display:none; }
+  #lab-view-label { font-size:12px; color:#94a3b8; margin:8px 2px 0; }
+  #lab-info { font-size:13px; color:#e2e8f0; line-height:1.6; margin-top:10px; } code { color:var(--lime); font-size:12px; }
+  .controls { display:grid; align-content:start; gap:12px; font-size:13px; } .controls label { display:grid; gap:4px; color:#cbd5e1; } .controls input[type=checkbox]{ width:18px; height:18px; accent-color:var(--lime); }
+  .controls label.row, .row { display:flex; justify-content:space-between; gap:8px; align-items:center; } input[type=range] { width:100%; accent-color:var(--lime); } select, button.act { background:#111; color:#fff; border:1px solid var(--line); border-radius:10px; padding:7px 10px; font-size:13px; }
+  button.act { cursor:pointer; } button.act:hover { border-color:var(--lime); }
+  .note { font-size:11px; color:#94a3b8; margin:0; }
+  pre#lab-json { margin:0; font-size:11px; background:#000; border:1px solid var(--line); border-radius:12px; padding:10px; overflow:auto; color:#cbd5e1; max-height:170px; }
+  .gal-title { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#94a3b8; margin:16px 0 8px; font-weight:600; }
+  .gal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:10px; }
+  .gal-card { background:#000; border:1px solid var(--line); border-radius:14px; padding:8px; color:#fff; cursor:pointer; text-align:center; display:grid; gap:4px; font:inherit; }
+  .gal-card:hover { border-color:rgba(182,255,57,.6); } .gal-card[aria-pressed="true"] { border-color:var(--lime); box-shadow:0 0 0 1px var(--lime) inset; }
+  .gal-card:focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
+  .gal-face { aspect-ratio:4/3; border-radius:8px; overflow:hidden; } .gal-name { font-size:13px; font-weight:600; } .gal-id { font-size:11px; color:#94a3b8; }
+  #lab-error { color:var(--coral); padding:10px 20px; }
+  @media (max-width:900px){ main{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>CHISPA <span>Expression Lab</span></h1>
+  <span class="banner">LABORATORIO · expresiones simuladas, sin backend ni eventos reales</span>
+  <a href="index.html">← Volver a la conversación</a>
+</header>
+<p id="lab-error" hidden></p>
+<main>
+  <section>
+    <div class="panel">
+      <div class="stage"><div id="lab-stage"></div><canvas id="lab-pixels" hidden width="320" height="240"></canvas></div>
+      <p id="lab-view-label"></p>
+      <div id="lab-info"></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><div id="lab-gallery"></div></div>
+  </section>
+  <aside class="panel controls" aria-label="Controles">
+    <label><span class="row"><span>Intensidad</span><b id="v-intensity">100%</b></span><input id="c-intensity" type="range" min="0" max="150" value="100"></label>
+    <label><span class="row"><span>Velocidad de transición</span><b id="v-speed">1.00×</b></span><input id="c-speed" type="range" min="25" max="300" value="100"></label>
+    <label class="row"><span>Efectos (rubor, lágrimas, destellos…)</span><input id="c-effects" type="checkbox" checked></label>
+    <label class="row"><span>Nivel de audio simulado</span><input id="c-audio-on" type="checkbox"></label>
+    <label><span class="row"><span>Nivel (solo mueve la boca de «Hablando»)</span><b id="v-audio">50%</b></span><input id="c-audio" type="range" min="0" max="100" value="50" disabled></label>
+    <label>Vista<select id="c-view"><option value="desktop">Escritorio</option><option value="small">Pantalla pequeña 320×240</option><option value="oled">OLED 128×64 (mono)</option></select></label>
+    <label class="row"><span>Modo monocromo</span><input id="c-mono" type="checkbox"></label>
+    <button class="act" id="c-replay" type="button">Repetir la expresión</button>
+    <p class="note">La vista de pantalla pequeña usa el rasterizador de referencia para hardware (sin DOM). La boca sin audio queda fija; nunca se anima al azar.</p>
+    <div><p class="note" style="margin-bottom:6px">Mensaje serializable <code>face.update</code> (lo que enviaría un backend o recibiría el firmware):</p><pre id="lab-json">{}</pre></div>
+  </aside>
+</main>
+<script type="module" src="js/chispa/demo/ExpressionLab.js?v=1"></script>
+</body>
+</html>

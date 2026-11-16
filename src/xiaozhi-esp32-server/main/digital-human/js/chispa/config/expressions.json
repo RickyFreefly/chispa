@@ -1,0 +1,285 @@
+{
+  "version": "1.0.0",
+  "design": {
+    "background": "#000000",
+    "eyeColor": "#FFFFFF",
+    "mouthColor": "#FFFFFF",
+    "accentColor": "#B6FF39",
+    "blushColor": "#FF5C9A",
+    "tearColor": "#39A9FF",
+    "alertColor": "#FF4D4D",
+    "coordinateSystem": "normalized-100",
+    "referenceWidth": 320,
+    "referenceHeight": 240,
+    "logicalWidth": 100,
+    "logicalHeight": 75
+  },
+  "groups": {
+    "operational": [
+      "idle",
+      "listening",
+      "thinking",
+      "speaking",
+      "offline",
+      "error"
+    ],
+    "auxiliary": [
+      "teaching",
+      "sleep"
+    ],
+    "emotional": [
+      "happy",
+      "laugh",
+      "eyeLaugh",
+      "playful",
+      "confident",
+      "oops",
+      "embarrassed",
+      "shyLaugh",
+      "surprised",
+      "shocked",
+      "angry",
+      "sad",
+      "encouraging",
+      "curious",
+      "ball",
+      "sheep",
+      "discover"
+    ]
+  },
+  "operationalPriority": [
+    "offline",
+    "error",
+    "speaking",
+    "listening",
+    "thinking",
+    "idle"
+  ],
+  "expressions": {
+    "happy": {
+      "label": "Feliz",
+      "kind": "emotion",
+      "eyes": "happyArc",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "softBounce",
+      "durationMs": 1000
+    },
+    "laugh": {
+      "label": "Risa",
+      "kind": "emotion",
+      "eyes": "closedHappyArc",
+      "mouth": "openSmile",
+      "accent": "none",
+      "animation": "laughBounce",
+      "durationMs": 1200
+    },
+    "eyeLaugh": {
+      "label": "Risa de ojos",
+      "kind": "emotion",
+      "eyes": "raisedHappyArc",
+      "mouth": "none",
+      "accent": "joyLines",
+      "animation": "eyeSquint",
+      "durationMs": 1000
+    },
+    "playful": {
+      "label": "Complicidad",
+      "kind": "emotion",
+      "eyes": "asymmetricHalfLid",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "sideGlance",
+      "durationMs": 1400
+    },
+    "confident": {
+      "label": "Seguro",
+      "kind": "emotion",
+      "eyes": "relaxedOval",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "steadyLook",
+      "durationMs": 1200
+    },
+    "oops": {
+      "label": "Oops",
+      "kind": "emotion",
+      "eyes": "wideOval",
+      "mouth": "none",
+      "accent": "threeDots",
+      "animation": "quickFreeze",
+      "durationMs": 1000
+    },
+    "embarrassed": {
+      "label": "Vergüenza",
+      "kind": "emotion",
+      "eyes": "loweredOval",
+      "mouth": "none",
+      "accent": "blush",
+      "animation": "lookDown",
+      "durationMs": 1500
+    },
+    "shyLaugh": {
+      "label": "Risa apenada",
+      "kind": "emotion",
+      "eyes": "smallHappyArc",
+      "mouth": "none",
+      "accent": "blushAndSweat",
+      "animation": "nervousBounce",
+      "durationMs": 1400
+    },
+    "surprised": {
+      "label": "Sorpresa",
+      "kind": "emotion",
+      "eyes": "largeOval",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "eyeExpand",
+      "durationMs": 850
+    },
+    "shocked": {
+      "label": "Shock",
+      "kind": "emotion",
+      "eyes": "extraLargeOval",
+      "mouth": "none",
+      "accent": "exclamation",
+      "animation": "shortShake",
+      "durationMs": 900
+    },
+    "angry": {
+      "label": "Enfado",
+      "kind": "emotion",
+      "eyes": "angledEyes",
+      "mouth": "none",
+      "accent": "angerMark",
+      "animation": "sharpSquint",
+      "durationMs": 1100
+    },
+    "sad": {
+      "label": "Tristeza",
+      "kind": "emotion",
+      "eyes": "sadTilt",
+      "mouth": "none",
+      "accent": "tears",
+      "animation": "slowLower",
+      "durationMs": 1700
+    },
+    "idle": {
+      "label": "Reposo",
+      "kind": "operational",
+      "eyes": "neutralOval",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "naturalBlink",
+      "durationMs": 0
+    },
+    "listening": {
+      "label": "Escuchando",
+      "kind": "operational",
+      "eyes": "attentiveOval",
+      "mouth": "none",
+      "accent": "listeningPulse",
+      "animation": "attentiveMotion",
+      "durationMs": 0
+    },
+    "thinking": {
+      "label": "Pensando",
+      "kind": "operational",
+      "eyes": "sideLookingOval",
+      "mouth": "none",
+      "accent": "thinkingDots",
+      "animation": "thoughtGlance",
+      "durationMs": 0
+    },
+    "speaking": {
+      "label": "Hablando",
+      "kind": "operational",
+      "eyes": "expressiveOval",
+      "mouth": "talking",
+      "accent": "none",
+      "animation": "audioReactive",
+      "durationMs": 0
+    },
+    "teaching": {
+      "label": "Explicando",
+      "kind": "auxiliary",
+      "eyes": "focusedOval",
+      "mouth": "smallSmile",
+      "accent": "none",
+      "animation": "gentleNod",
+      "durationMs": 0
+    },
+    "encouraging": {
+      "label": "Motivando",
+      "kind": "emotion",
+      "eyes": "happyArc",
+      "mouth": "smallSmile",
+      "accent": "sparkles",
+      "animation": "positiveBounce",
+      "durationMs": 1200
+    },
+    "error": {
+      "label": "Error suave",
+      "kind": "operational",
+      "eyes": "confusedAsymmetric",
+      "mouth": "smallFlat",
+      "accent": "questionMark",
+      "animation": "confusedTilt",
+      "durationMs": 1400
+    },
+    "offline": {
+      "label": "Desconectada",
+      "kind": "operational",
+      "eyes": "closedFlat",
+      "mouth": "none",
+      "accent": "none",
+      "animation": "sleepIdle",
+      "durationMs": 0
+    },
+    "curious": {
+      "label": "Curiosa",
+      "kind": "emotion",
+      "eyes": "confusedAsymmetric",
+      "mouth": "smallSmile",
+      "accent": "questionMark",
+      "animation": "sideGlance",
+      "durationMs": 1500
+    },
+    "ball": {
+      "label": "Pelota",
+      "kind": "emotion",
+      "eyes": "attentiveOval",
+      "mouth": "smallSmile",
+      "accent": "ball",
+      "animation": "followBall",
+      "durationMs": 6000
+    },
+    "sheep": {
+      "label": "Ovejas",
+      "kind": "emotion",
+      "eyes": "loweredOval",
+      "mouth": "none",
+      "accent": "sheep",
+      "animation": "sleepyWatch",
+      "durationMs": 8000
+    },
+    "discover": {
+      "label": "Descubrir",
+      "kind": "emotion",
+      "eyes": "attentiveOval",
+      "mouth": "smallSmile",
+      "accent": "discover",
+      "animation": "discoverLook",
+      "durationMs": 5000
+    },
+    "sleep": {
+      "label": "Durmiendo",
+      "kind": "auxiliary",
+      "eyes": "closedFlat",
+      "mouth": "none",
+      "accent": "zzz",
+      "animation": "sleepIdle",
+      "durationMs": 0
+    }
+  }
+}

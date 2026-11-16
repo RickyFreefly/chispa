@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Chispa - avatar</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;background:#05070f;color:#cfe;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:18px}
+canvas{width:min(80vmin,480px);height:min(80vmin,480px);border-radius:24px;background:#0b1020}
+#bt{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:520px}
+button{background:#121a33;color:#cfe;border:1px solid #2a3866;border-radius:10px;padding:8px 14px;cursor:pointer}
+button.on{background:#1f2f66;border-color:#4ade80}
+</style></head><body>
+<canvas id="cv" width="480" height="480"></canvas>
+<div id="bt"></div>
+<script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d');c.scale(2,2);
+const BG='#0b1020',EYE='#4ade80',HI='#eafff1',SP='#ffc247';
+const S={
+neutral:{w:56,h:72,top:0,tilt:0,cheek:0,gx:0,gy:0,mouth:0,smile:0,spark:0,asym:0,gap:88},
+listening:{w:60,h:84,top:0,tilt:0,cheek:0,gx:0,gy:-2,mouth:0,smile:0,spark:0,asym:0,gap:90},
+thinking:{w:52,h:62,top:0,tilt:0,cheek:0,gx:16,gy:-16,mouth:0,smile:0,spark:1,asym:-0.2,gap:88},
+speaking:{w:56,h:70,top:0,tilt:0,cheek:0,gx:0,gy:0,mouth:1,smile:0,spark:0,asym:0,gap:88},
+happy:{w:60,h:64,top:0,tilt:0,cheek:0.6,gx:0,gy:0,mouth:0,smile:1,spark:0.6,asym:0,gap:90},
+surprised:{w:50,h:98,top:0,tilt:0,cheek:0,gx:0,gy:-2,mouth:0,smile:0,spark:0,asym:0,gap:92},
+sad:{w:54,h:66,top:0.15,tilt:-0.6,cheek:0,gx:0,gy:6,mouth:0,smile:-1,spark:0,asym:0,gap:86},
+sleepy:{w:58,h:66,top:0.55,tilt:0,cheek:0,gx:0,gy:8,mouth:0,smile:0,spark:0,asym:0,gap:88}
+};
+const L={neutral:'Neutral',listening:'Escuchando',thinking:'Pensando',speaking:'Hablando',happy:'Feliz',surprised:'Sorprendido',sad:'Triste',sleepy:'Con sueño'};
+let cur='neutral',P=Object.assign({},S.neutral),jx=0,jy=0,blink=0,blinkAt=1.5,nextJit=1,t0=performance.now();
+function set(n){if(S[n]){cur=n;mark()}}
+function mark(){document.querySelectorAll('#bt button').forEach(b=>b.className=b.dataset.k===cur?'on':'')}
+const bt=document.getElementById('bt');
+Object.keys(L).forEach(k=>{const b=document.createElement('button');b.textContent=L[k];b.dataset.k=k;b.onclick=()=>set(k);bt.appendChild(b)});
+mark();
+function eye(cx,cy,w,h,top,tilt,cheek,side){
+const x=cx-w/2,y=cy-h/2,r=Math.min(w,h)*0.38;
+c.save();c.beginPath();c.roundRect(x,y,w,h,r);c.clip();
+c.fillStyle=EYE;c.fillRect(x,y,w,h);
+c.fillStyle=HI;c.beginPath();c.arc(x+w*0.28,y+h*0.24,Math.max(4,w*0.1),0,7);c.fill();
+c.fillStyle=BG;
+const tl=Math.max(0,-tilt)*0.45,inner=h*top,outer=h*(top+tl);
+const lo=side<0?outer:inner,ro=side<0?inner:outer;
+if(lo>0||ro>0){c.beginPath();c.moveTo(x-2,y-2);c.lineTo(x+w+2,y-2);c.lineTo(x+w+2,y+ro);c.lineTo(x-2,y+lo);c.closePath();c.fill()}
+if(cheek>0.02){const rr=w*0.75;c.beginPath();c.arc(cx,cy+h/2+rr*(1.05-cheek*0.9),rr,0,7);c.fill()}
+c.restore()}
+function star(x,y,s,rot){c.save();c.translate(x,y);c.rotate(rot);c.fillStyle=SP;c.beginPath();
+for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?s*0.28:s;c.lineTo(Math.cos(a)*r,Math.sin(a)*r)}c.closePath();c.fill();c.restore()}
+function frame(now){
+const t=(now-t0)/1000,T=S[cur];
+for(const k in T){const g=(k==='gx'?T.gx+jx:k==='gy'?T.gy+jy:T[k]);P[k]+=(g-P[k])*0.16}
+if(t>nextJit){nextJit=t+1.6+Math.random()*2;const m=(cur==='thinking')?2:8;jx=(Math.random()-0.5)*m;jy=(Math.random()-0.5)*m*0.6}
+if(t>blinkAt&&blink===0){blink=0.001;blinkAt=t+2.5+Math.random()*3}
+if(blink>0){blink+=0.09;if(blink>=2)blink=0}
+const bl=blink>0?(blink<1?blink:2-blink):0,top=Math.max(P.top,bl);
+c.fillStyle=BG;c.fillRect(0,0,240,240);
+const cy=100+P.gy,cxL=120-P.gap/2+P.gx,cxR=120+P.gap/2+P.gx;
+eye(cxL,cy,P.w,P.h,top,P.tilt,P.cheek,-1);
+eye(cxR,cy,P.w,P.h*(1+P.asym),top,P.tilt,P.cheek,1);
+if(P.spark>0.03){const pu=cur==='thinking'?1+0.18*Math.sin(t*6):1;star(120,32,13*P.spark*pu,t*(cur==='thinking'?1.5:0.3))}
+if(P.mouth>0.05){const m=P.mouth*(0.3+0.7*Math.abs(Math.sin(t*9)*Math.cos(t*3.3))),h=5+m*24;c.fillStyle=EYE;c.beginPath();c.roundRect(120-18,190-h/2,36,h,h/2);c.fill()}
+else if(Math.abs(P.smile)>0.05){c.strokeStyle=EYE;c.lineWidth=5;c.lineCap='round';c.globalAlpha=Math.min(1,Math.abs(P.smile));c.beginPath();
+if(P.smile>0)c.arc(120,172,24,Math.PI*0.2,Math.PI*0.8);else c.arc(120,214,24,Math.PI*1.2,Math.PI*1.8);c.stroke();c.globalAlpha=1}
+requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+window.Chispa={set};
+window.addEventListener('message',e=>{if(e.data&&e.data.chispa)set(e.data.chispa)});
+</script></body></html>

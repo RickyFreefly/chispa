@@ -1,0 +1,108 @@
+/* Chispa: escenario + chat lateral. Paleta: negro #000, blanco #FFF, lima #B6FF39, rosa #FF5C9A, azul #39A9FF, coral #FF4D4D */
+body.chispa { background: #000; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
+body.chispa .background-container { background-image: radial-gradient(1200px 700px at 30% 20%, rgba(182,255,57,.22), transparent 60%), radial-gradient(900px 600px at 80% 90%, rgba(182,255,57,.12), transparent 60%) !important; }
+body.chispa .background-overlay { display: none; }
+body.chispa .container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "stage chat" "controls chat"; gap: 14px 16px; width: 100vw; height: 100vh; padding: 16px; align-items: stretch; justify-content: stretch; }
+
+/* Escenario */
+.stage-panel { grid-area: stage; position: relative; display: flex; flex-direction: column; align-items: center; min-height: 0; border-radius: 28px; overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(182,255,57,.28); transition: box-shadow .4s ease, border-color .4s ease; }
+.stage-panel[data-state="listening"] { border-color: rgba(182,255,57,.55); box-shadow: 0 0 40px rgba(182,255,57,.14) inset; }
+.stage-panel[data-state="thinking"] { border-color: rgba(182,255,57,.7); }
+.stage-panel[data-state="speaking"] { border-color: rgba(182,255,57,.4); }
+.stage-panel[data-state="error"] { border-color: rgba(248,113,113,.5); }
+.stage-panel[data-state="offline"] { border-color: rgba(148,163,184,.2); }
+.stage-panel .connection-status-top { position: static; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 12px 0; }
+.stage-panel .status-indicator { position: static; transform: none; background: rgba(248,250,252,.07); border: 1px solid rgba(248,250,252,.12); color: #F8FAFC; font-size: 14px; }
+.demo-badge { font-size: 12px; font-weight: 600; letter-spacing: .03em; color: #0D1222; background: #FCE7F3; padding: 4px 12px; border-radius: 999px; text-align: center; }
+.chispa-stage { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; padding: 8px 16px; background: #000; }
+.chispa-stage svg { aspect-ratio: 4 / 3; width: min(100%, calc((100vh - 280px) * 4 / 3)); height: auto; max-height: 100%; border-radius: 22px; }
+.chispa-svg { height: 100%; width: auto; max-width: 100%; max-height: 640px; overflow: visible; }
+.voice-note { min-height: 18px; font-size: 12px; color: #FCE7F3; opacity: .85; }
+.stage-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 4px 12px; }
+.profile-select { color: #F8FAFC; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.profile-select select { background: #151b33; color: #F8FAFC; border: 1px solid rgba(182,255,57,.5); border-radius: 10px; padding: 6px 10px; font-size: 14px; }
+.profile-desc { color: #cbd5e1; font-size: 13px; text-align: center; padding: 0 16px 12px; min-height: 30px; }
+.chip { background: rgba(182,255,57,.18); color: #F8FAFC; border: 1px solid rgba(182,255,57,.55); border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer; transition: background .2s, transform .15s; }
+.chip:hover { background: rgba(182,255,57,.38); }
+.chip:focus-visible, .profile-select select:focus-visible, .control-btn:focus-visible, .chat-ipt input:focus-visible { outline: 2px solid #B6FF39; outline-offset: 2px; }
+.chip[aria-pressed="true"] { background: #B6FF39; border-color: #B6FF39; color: #0D1222; font-weight: 600; }
+.chip-exit { border-color: rgba(248,250,252,.35); background: transparent; }
+.demo-panel { position: absolute; left: 12px; right: 12px; bottom: 12px; background: rgba(13,18,34,.94); border: 1px solid rgba(182,255,57,.5); border-radius: 18px; padding: 12px; backdrop-filter: blur(8px); z-index: 5; }
+.demo-panel[hidden], .demo-badge[hidden] { display: none; }
+.demo-states { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.demo-note { margin-top: 8px; font-size: 12px; color: #94a3b8; text-align: center; }
+
+/* Chat lateral */
+body.chispa .chat-container { grid-area: chat; position: static; display: flex; flex-direction: column; min-height: 0; padding: 14px; border-radius: 28px; background: rgba(248,250,252,.04); border: 1px solid rgba(248,250,252,.1); z-index: 1; }
+.chat-header { padding: 2px 4px 10px; }
+.chat-header h2 { font-size: 15px; font-weight: 600; color: #F8FAFC; }
+body.chispa .chat-stream { flex: 1 1 auto; width: auto; max-height: none; min-height: 0; gap: 10px; pointer-events: auto; padding: 2px 4px; margin: 0 0 10px; }
+body.chispa .chat-message { display: flex; animation: chispaIn .25s ease-out; }
+body.chispa .chat-message.user { justify-content: flex-end; }
+body.chispa .chat-message.ai, body.chispa .chat-message.system { justify-content: flex-start; }
+body.chispa .message-bubble { max-width: 88%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.45; text-shadow: none; backdrop-filter: none; border: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+body.chispa .chat-message.ai .message-bubble { background: #F8FAFC; color: #0D1222; border-bottom-left-radius: 6px; align-self: auto; }
+body.chispa .chat-message.user .message-bubble { background: #B6FF39; color: #0D1222; border-bottom-right-radius: 6px; align-self: auto; }
+body.chispa .chat-message.system .message-bubble { background: rgba(248,250,252,.08); color: #cbd5e1; align-self: auto; }
+body.chispa .chat-ipt { background: transparent; }
+body.chispa .chat-ipt input { width: 100%; background: rgba(248,250,252,.08); color: #F8FAFC; border: 1px solid rgba(248,250,252,.18); border-radius: 14px; padding: 12px 14px; font-size: 15px; }
+@keyframes chispaIn { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Controles */
+body.chispa .control-bar { grid-area: controls; position: static; transform: none; justify-self: center; background: rgba(248,250,252,.06); border: 1px solid rgba(182,255,57,.35); box-shadow: none; gap: 12px; padding: 10px 18px; border-radius: 999px; }
+body.chispa .control-btn { background: rgba(182,255,57,.35); }
+body.chispa .control-btn:hover { background: rgba(182,255,57,.6); }
+body.chispa .control-btn.recording { background: #B6FF39; color: #0D1222; }
+body.chispa .control-btn:disabled { opacity: .45; cursor: not-allowed; }
+body.chispa .tab-btn[data-tab="other"] { display: none; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  body.chispa { overflow: auto; }
+  body.chispa .container { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; grid-template-areas: "stage" "controls" "chat"; height: auto; min-height: 100vh; }
+  .stage-panel { height: min(56vh, 460px); }
+  body.chispa .chat-container { height: 42vh; min-height: 260px; }
+}
+@media (max-width: 520px) { .profile-desc { display: none; } .chispa-stage svg { width: 100%; } }
+
+/* Movimiento reducido: sin transiciones decorativas */
+@media (prefers-reduced-motion: reduce) { .stage-panel, .chip { transition: none; } body.chispa .chat-message { animation: none; } }
+
+/* ---- Organización del día ---- */
+#organizerRoot{position:relative;display:inline-block}
+.org-panel{position:absolute;right:0;bottom:calc(100% + 8px);width:min(380px,92vw);max-height:60vh;overflow:auto;background:#000;border:1px solid #B6FF39;border-radius:12px;padding:10px;z-index:30;color:#fff}
+.org-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.org-tabs button{background:#111;color:#fff;border:1px solid #333;border-radius:999px;padding:4px 10px;cursor:pointer}
+.org-tabs button[aria-selected=true]{background:#B6FF39;color:#000;border-color:#B6FF39}
+.org-row{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #222}
+.org-row>span:first-of-type,.org-row>span:nth-child(2){flex:1}
+.org-row b{display:block;font-weight:600}.org-row small{color:#9aa}
+.org-row.is-done b{text-decoration:line-through;color:#777}
+.org-time{color:#B6FF39;font-variant-numeric:tabular-nums;white-space:nowrap}
+.org-empty,.org-hint,.org-count{color:#9aa;font-size:.85em;margin:8px 0}
+.org-big{font-size:3em;text-align:center;margin:12px 0;color:#B6FF39;font-variant-numeric:tabular-nums}.org-big em{font-style:normal}
+.org-progress{height:8px;background:#222;border-radius:4px;overflow:hidden}.org-progress span{display:block;height:100%;background:#B6FF39;transition:width .3s}
+.org-focus{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#000;border:1px solid #B6FF39;color:#B6FF39;border-radius:999px;padding:4px 14px;z-index:40;font-variant-numeric:tabular-nums}
+.org-ring{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:50;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;font-size:1.4em;color:#fff;animation:orgPulse 1s infinite}
+.org-ring-item{display:flex;gap:16px;align-items:center;border:2px solid #B6FF39;border-radius:12px;padding:14px 20px;background:#000}
+@keyframes orgPulse{50%{background:rgba(20,40,0,.9)}}
+@media (prefers-reduced-motion:reduce){.org-ring{animation:none}}
+.org-ring[hidden],.org-focus[hidden],.org-panel[hidden]{display:none!important}
+
+/* ---- Tarjeta Hoy ---- */
+.info-card{position:absolute;top:44px;left:12px;width:210px;background:rgba(0,0,0,.75);border:1px solid #333;border-radius:12px;padding:10px 12px;color:#fff;z-index:5;font-size:.85em}
+.info-time{display:flex;justify-content:space-between;align-items:center;font-size:1.8em;font-weight:700;color:#B6FF39;font-variant-numeric:tabular-nums}
+.info-time .chip{font-size:.45em}
+.info-date{margin:2px 0 8px;text-transform:capitalize;color:#ddd}
+.info-weather{margin:0 0 6px}.info-weather b{font-size:1.5em;color:#fff}.info-weather small,.info-muted{color:#9aa}
+.info-fest{color:#FF5C9A;margin:4px 0 0}.info-muted{margin:4px 0 0}
+@media (max-width:700px){.info-card{position:static;width:auto;margin:6px 12px}}
+
+/* Memoria */
+.chip-check { display: inline-flex; align-items: center; gap: 6px; }
+.chip-check input { accent-color: #B6FF39; width: 14px; height: 14px; }
+.chip:disabled, .chip-check input:disabled { opacity: .5; cursor: not-allowed; }
+.profile-select input { background: rgba(13,18,34,.9); color: #F8FAFC; border: 1px solid rgba(182,255,57,.55); border-radius: 8px; padding: 4px 8px; width: 110px; font-size: 13px; margin-left: 6px; }
+.profile-select input:focus-visible { outline: 2px solid #B6FF39; outline-offset: 2px; }
