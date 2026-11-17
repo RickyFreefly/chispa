@@ -10,7 +10,7 @@ OpenJarvis (Stanford, Apache 2.0) está clonado en `../openjarvis`. La idea: pro
 2. `cd ~/Documents/chispabot/openjarvis`
 3. `uv sync` (instala dependencias; tarda la primera vez)
 4. `uv run jarvis init` (detecta tu hardware y genera la configuración)
-5. `uv run jarvis serve` (deja esta terminal abierta; backend en el puerto 8000)
+5. `uv run jarvis serve --port 8001` (deja esta terminal abierta; backend en el puerto 8001)
 6. En otra terminal: `python3 ~/Documents/chispabot/pruebas-jarvis/medir.py`
 
 ## Cómo leer el resultado

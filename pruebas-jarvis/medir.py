@@ -9,7 +9,7 @@ import time
 import urllib.request
 
 OLLAMA = "http://127.0.0.1:11434/api/chat"
-JARVIS = "http://127.0.0.1:8000"
+JARVIS = "http://127.0.0.1:8001"
 MODELO_OLLAMA = "gemma4:e4b"
 META_S = 3.0
 

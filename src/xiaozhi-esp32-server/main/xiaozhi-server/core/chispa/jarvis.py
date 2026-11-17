@@ -7,7 +7,7 @@ exactos, búsquedas y archivos. Solo biblioteca estándar; el acceso a red se in
 import json
 import urllib.request
 
-URL = "http://127.0.0.1:8000"
+URL = "http://127.0.0.1:8001"  # el 8000 es del websocket de Chispa
 MODELO = "gemma4:e4b"
 TIMEOUT_S = 60
 INSTRUCCION = (
