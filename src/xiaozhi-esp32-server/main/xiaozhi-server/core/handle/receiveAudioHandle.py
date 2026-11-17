@@ -143,8 +143,8 @@ async def _escuchar_despertar(conn: "ConnectionHandler", pcm_frame):
     return True
 
 
-async def _chispa_reposo(conn: "ConnectionHandler", dormir):
-    """Entra o sale del reposo: lo dice en voz alta y avisa a la página para que lo muestre."""
+async def _chispa_reposo(conn: "ConnectionHandler", dormir, hablar=True):
+    """Entra o sale del reposo: avisa a la página y, si hablar, lo dice en voz alta."""
     conn.chispa_reposo = dormir
     det = getattr(conn, "chispa_detector", None)
     if det is not None:
@@ -154,6 +154,8 @@ async def _chispa_reposo(conn: "ConnectionHandler", dormir):
         await conn.websocket.send(json.dumps({"type": "chispa_reposo", "active": dormir}))
     except Exception:
         pass
+    if not hablar:
+        return
     from core.handle.intentHandler import speak_txt
     import uuid
     conn.client_abort = False
@@ -174,21 +176,11 @@ async def no_voice_close_connect(conn: "ConnectionHandler", have_voice):
         close_connection_no_voice_time = int(
             conn.config.get("close_connection_no_voice_time", 120)
         )
-        if (
-            not conn.close_after_chat
-            and no_voice_time > 1000 * close_connection_no_voice_time
-        ):
-            conn.close_after_chat = True
-            conn.client_abort = False
-            end_prompt = conn.config.get("end_prompt", {})
-            if end_prompt and end_prompt.get("enable", True) is False:
-                conn.logger.bind(tag=TAG).info("结束对话，无需发送结束提示语")
-                await conn.close()
-                return
-            prompt = end_prompt.get("prompt")
-            if not prompt:
-                prompt = "请你以```时间过得真快```未来头，用富有感情、依依不舍的话来结束这场对话吧。！"
-            await startToChat(conn, prompt)
+        if no_voice_time > 1000 * close_connection_no_voice_time:
+            # Chispa no cuelga: pasa a reposo en silencio y despierta con «hola chispa»
+            conn.logger.bind(tag=TAG).info(
+                f"Sin voz por {int(no_voice_time / 1000)} s: Chispa entra en reposo")
+            await _chispa_reposo(conn, True, hablar=False)
 
 
 async def max_out_size(conn: "ConnectionHandler"):
