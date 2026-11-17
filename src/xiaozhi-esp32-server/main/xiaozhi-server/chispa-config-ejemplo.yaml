@@ -96,6 +96,9 @@ end_prompt:
     Despídete con una frase breve y cálida, empezando con "Qué rápido pasó el tiempo".
 
 # «hola chispa» / «adiós chispa» las maneja core/chispa/reposo.py (la respuesta en caché del servidor es en chino)
+# Tras 30 s sin voz, Chispa pasa sola a reposo (despierta con «hola chispa»)
+close_connection_no_voice_time: 30
+
 wakeup_words: []
 
 # Chispa: solo las funciones del organizador (evita las de China: noticias, música, clima)
