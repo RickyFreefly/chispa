@@ -11,7 +11,7 @@ ESQUEMA = {"type": "function", "function": {
                     "actual en internet, o leer y analizar archivos del computador. "
                     "Ej: 'calcula 847 por 362', 'investiga el precio del dólar', 'busca en internet quién ganó ayer'."),
     "parameters": {"type": "object", "properties": {
-        "peticion": {"type": "string", "description": "la tarea completa, con todos los datos necesarios"}},
+        "peticion": {"type": "string", "description": "la tarea completa, con los números SIEMPRE en cifras (847, no 'ochocientos cuarenta y siete')"}},
         "required": ["peticion"]}}}
 
 

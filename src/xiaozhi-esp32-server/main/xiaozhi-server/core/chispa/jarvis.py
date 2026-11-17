@@ -12,7 +12,10 @@ MODELO = "gemma4:e4b"
 TIMEOUT_S = 60
 INSTRUCCION = (
     "Responde en español y breve: una o dos frases, sin listas ni markdown, "
-    "porque la respuesta se lee en voz alta. Si usas herramientas, da solo el resultado."
+    "porque la respuesta se lee en voz alta. "
+    "Para cualquier cálculo usa SIEMPRE tu herramienta de código o calculadora y da el "
+    "resultado exacto que devuelva; nunca calcules de cabeza. Si la petición trae números "
+    "escritos en palabras, conviértelos a cifras antes de calcular."
 )
 NO_DISPONIBLE = "Mi segundo cerebro no está disponible ahora. Revisa que OpenJarvis esté corriendo."
 MAX_LARGO = 600
