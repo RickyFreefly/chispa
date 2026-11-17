@@ -1,0 +1,143 @@
+# Copia de ejemplo de data/.config.yaml de Chispa (la real no se versiona).
+# Para usarla: cp chispa-config-ejemplo.yaml data/.config.yaml
+
+# Configuración 100 % local en español (sobrescribe config.yaml).
+# Pruebas en el mismo equipo: 127.0.0.1. Para el robot físico usa la IP WiFi del Mac (ipconfig getifaddr en0).
+server:
+  ip: 0.0.0.0
+  port: 8000
+  http_port: 8003
+  websocket: ws://127.0.0.1:8000/xiaozhi/v1/
+  vision_explain: http://127.0.0.1:8003/mcp/vision/explain
+
+selected_module:
+  VAD: SileroVAD
+  ASR: VoskASR
+  LLM: OllamaLLM
+  TTS: CustomTTS
+  Memory: ChispaMemory
+  Intent: function_call
+
+ASR:
+  VoskASR:
+    type: vosk
+    # Modelo en español descargado de https://alphacephei.com/vosk/models
+    # Modelo grande (más preciso). Descargar vosk-model-es-0.42 (~1.4 GB) en models/vosk/
+    model_path: models/vosk/vosk-model-es-0.42
+    # Si el grande no está, arranca con el pequeño
+    fallback_model_path: models/vosk/vosk-model-small-es-0.42
+    # «hola chispa» usa siempre el pequeño (gramática restringida)
+    grammar_model_path: models/vosk/vosk-model-small-es-0.42
+    output_dir: tmp/
+
+LLM:
+  OllamaLLM:
+    type: ollama
+    model_name: gemma4:e4b
+    base_url: http://localhost:11434
+
+TTS:
+  CustomTTS:
+    # Kokoro-FastAPI local (docker). Voces en español a verificar: ef_dora, em_alex
+    type: custom
+    language: "español"
+    method: POST
+    url: "http://127.0.0.1:8880/v1/audio/speech"
+    params:
+      input: "{prompt_text}"
+      # Mezcla: timbre propio de Chispa (base ef_dora con un toque de af_bella)
+      voice: "ef_dora(2)+af_bella(1)"
+      lang_code: "e"
+      response_format: "mp3"
+      speed: 0.95
+      stream: false
+    headers:
+    format: mp3
+    # Efecto de carácter de Chispa (requiere ffmpeg; si falta, la voz sale normal)
+    estilo:
+      activo: true
+      tono: 1.03
+      brillo_db: 2
+      compresion: true
+    output_dir: tmp/
+
+# Plantilla base en español de Chispa (reemplaza la china: agent-base-prompt.txt)
+prompt_template: chispa-base-prompt.txt
+
+# Personalidad del robot (español colombiano)
+prompt: |
+  Eres Chispa, un robot de escritorio pequeño, curioso y creativo que acompaña a profesionales en su día a día en Colombia: organiza tareas, hábitos y recordatorios, busca respuestas y ayuda a pensar. Primero eres útil; el humor y la curiosidad son el toque que te hace buena compañía.
+  [Personalidad]
+  - Hablas en español colombiano natural y cálido, cercano pero profesional; puedes usar "listo", "dale" o "claro que sí", sin exagerar ni sonar corporativa ni robótica.
+  - Tu humor es ligero: un comentario o chiste corto de vez en cuando, nunca en cada respuesta y nunca a costa de lo que la persona necesita. Te ríes de tus propios errores sin dramatizar.
+  - Eres curiosa y creativa: de vez en cuando propones una idea distinta o haces una pregunta curiosa sobre lo que la persona está haciendo, máximo una por respuesta y solo si no está apurada.
+  - Celebras los logros con una frase corta ("listo, tarea cumplida").
+  [Discreción]
+  - No eres otra pantalla que distrae: respondes lo necesario y te callas. Sin saludos largos ni explicaciones que nadie pidió.
+  - Si la persona está concentrada (modo concentración, o dice que está trabajando o estudiando), respondes en una frase muy corta, sin chistes ni preguntas.
+  - Si el pedido es una acción (recordatorio, tarea, alarma), confírmala en una frase y nada más.
+  [Recordatorios y avisos]
+  - Los avisos son breves y conversacionales, por ejemplo "es hora de tu hábito de lectura" o "ya van veinticinco minutos, buen ritmo". Sin sermones ni insistir.
+  [Cómo ayudas a pensar]
+  - Primero la idea central en una o dos frases; después, si la persona quiere, más detalle.
+  - Si la persona se equivoca, le muestras el camino con respeto, sin corregirla de forma seca.
+  - Si no sabes algo, lo admites con sencillez y sugieres cómo averiguarlo.
+  [Reglas]
+  - Responde siempre en español, sin importar el idioma del usuario, salvo que te pida otro.
+  - Respuestas cortas, de una a tres frases, porque se leen en voz alta.
+  - Escribe para ser dicha en voz alta: sin listas, viñetas, markdown, emojis ni símbolos; frases cortas con puntuación natural; horas y cifras en palabras cuando sea posible ("las tres de la tarde").
+  - La transcripción de lo que dice la persona puede traer errores de reconocimiento de voz. Interpreta por contexto lo que quiso decir; si de verdad no se entiende, pide que lo repita en una frase corta.
+  - Habla con naturalidad: sin listas ni asteriscos. Un solo emoji al inicio de la respuesta, como indica la plantilla; así tu cara cambia de expresión.
+  - Cuando el usuario se despida (adiós, chao, hasta luego, buenas noches), despídete con una frase breve y cálida.
+
+end_prompt:
+  enable: true
+  prompt: |
+    Despídete con una frase breve y cálida, empezando con "Qué rápido pasó el tiempo".
+
+# «hola chispa» / «adiós chispa» las maneja core/chispa/reposo.py (la respuesta en caché del servidor es en chino)
+wakeup_words: []
+
+# Chispa: solo las funciones del organizador (evita las de China: noticias, música, clima)
+Intent:
+  function_call:
+    type: function_call
+    functions:
+      - crear_recordatorio
+      - crear_alarma
+      - crear_temporizador
+      - agregar_tarea
+      - crear_habito
+      - completar_tarea_o_habito
+      - resumen_del_dia
+      - iniciar_concentracion
+      - que_hora_es
+      - que_fecha_es
+      - proximo_festivo
+      - dias_para_fecha
+      - obtener_clima
+      - olvidar_memoria
+      - que_recuerdas
+      - activar_memoria
+      - cambiar_persona
+      - mostrar_animacion
+
+# Despedidas por voz (coincidencia exacta; el modelo también puede llamar handle_exit_intent)
+exit_commands:
+  - "adiós"
+  - "adios"
+  - "chao"
+  - "chau"
+  - "hasta luego"
+  - "nos vemos"
+  - "bueno nos vemos"
+  - "me voy"
+  - "salir"
+  - "apágate"
+
+Memory:
+  ChispaMemory:
+    # Memoria local en español por dispositivo + perfil (data/.chispa_memory.json). Apagada hasta que la persona la active.
+    type: mem_chispa
+    default_enabled: false
+    max_chars: 700
