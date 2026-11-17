@@ -75,6 +75,7 @@ Página web (cara + panel) ─ src/xiaozhi-esp32-server/main/digital-human
 | `pruebas-voz/` | Kit para comparar voces (TTS) y reconocimiento (ASR) |
 | `guia-troko-pines.md` | Piezas, pines y compilación del firmware |
 | `LOCAL_SETUP.md` | Puesta en marcha local detallada |
+| `DESPLIEGUE.md` | Dónde y cómo publicar para el público (modelos local, nube e híbrido) |
 
 ## Cómo correr (resumen)
 
