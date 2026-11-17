@@ -22,3 +22,6 @@ resultados_asr.csv
 _to_delete/
 .DS_Store
 robot-ia-colombia.tar.gz
+
+# Framework externo en prueba (clon aparte, no se versiona aquí)
+openjarvis/
