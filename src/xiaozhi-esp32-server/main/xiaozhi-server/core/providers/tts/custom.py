@@ -6,6 +6,7 @@ from config.logger import setup_logging
 from datetime import datetime
 from core.providers.tts.base import TTSProviderBase
 from core.chispa.habla import normalizar_para_voz
+from core.chispa.timbre import aplicar_timbre
 
 TAG = __name__
 logger = setup_logging()
@@ -19,6 +20,7 @@ class TTSProvider(TTSProviderBase):
         self.audio_file_type = config.get("format", "wav")
         self.output_file = config.get("output_dir", "tmp/")
         self.params = config.get("params")
+        self.estilo = config.get("estilo") or {}
 
         if isinstance(self.params, str):
             try:
@@ -54,11 +56,12 @@ class TTSProvider(TTSProviderBase):
                 timeout=self.tts_timeout,
             )
         if resp.status_code == 200:
+            audio = aplicar_timbre(resp.content, self.estilo, self.audio_file_type)
             if output_file:
                 with open(output_file, "wb") as file:
-                    file.write(resp.content)
+                    file.write(audio)
             else:
-                return resp.content
+                return audio
         else:
             error_msg = f"Custom TTS请求失败: {resp.status_code} - {resp.text}"
             logger.bind(tag=TAG).error(error_msg)

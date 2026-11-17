@@ -9,22 +9,30 @@ import asyncio, os, sys, time, html
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src",
                                 "xiaozhi-esp32-server", "main", "xiaozhi-server"))
 from core.chispa.habla import normalizar_para_voz
+from core.chispa.timbre import aplicar_timbre
 import requests
 
 KOKORO = "http://127.0.0.1:8880/v1/audio/speech"
-VOCES_KOKORO = [("kokoro-ef_dora", "ef_dora"), ("kokoro-em_alex", "em_alex")]
+# (nombre, voz de Kokoro, con efecto de Chispa)
+VOCES_KOKORO = [
+    ("kokoro-ef_dora", "ef_dora", False),                                  # referencia actual
+    ("kokoro-mezcla-bella", "ef_dora(2)+af_bella(1)", False),              # mezcla sola
+    ("kokoro-chispa", "ef_dora(2)+af_bella(1)", True),                     # la configurada en el servidor
+    ("kokoro-mezcla-heart-fx", "ef_dora(2)+af_heart(1)", True),            # alternativa
+]
 VOCES_EDGE = [("edge-Salome-CO", "es-CO-SalomeNeural"), ("edge-Gonzalo-CO", "es-CO-GonzaloNeural")]
 SALIDA = os.path.join(os.path.dirname(__file__), "salida", "tts")
 frases = [l.strip() for l in open(os.path.join(os.path.dirname(__file__), "frases.txt"), encoding="utf-8") if l.strip()]
 tiempos = {}
 
 
-def kokoro(nombre, voz, i, texto):
+def kokoro(nombre, voz, i, texto, efecto=False):
     t0 = time.time()
     r = requests.post(KOKORO, json={"input": texto, "voice": voz, "lang_code": "e",
                                     "response_format": "mp3", "speed": 0.95, "stream": False}, timeout=60)
     r.raise_for_status()
-    open(f"{SALIDA}/{nombre}/{i:02d}.mp3", "wb").write(r.content)
+    audio = aplicar_timbre(r.content) if efecto else r.content
+    open(f"{SALIDA}/{nombre}/{i:02d}.mp3", "wb").write(audio)
     tiempos.setdefault(nombre, []).append(time.time() - t0)
 
 
@@ -36,17 +44,18 @@ async def edge(nombre, voz, i, texto):
 
 
 async def main():
-    for n, _ in VOCES_KOKORO + VOCES_EDGE:
+    for n in [v[0] for v in VOCES_KOKORO] + [v[0] for v in VOCES_EDGE]:
         os.makedirs(f"{SALIDA}/{n}", exist_ok=True)
     for i, f in enumerate(frases, 1):
         txt = normalizar_para_voz(f)
-        for n, v in VOCES_KOKORO:
-            try: kokoro(n, v, i, txt)
+        for n, v, fx in VOCES_KOKORO:
+            try: kokoro(n, v, i, txt, fx)
             except Exception as e: print("Kokoro falló:", n, e); break
         for n, v in VOCES_EDGE:
             try: await edge(n, v, i, txt)
             except Exception as e: print("Edge falló:", n, e)
-    nombres = [n for n, _ in VOCES_KOKORO + VOCES_EDGE if os.path.exists(f"{SALIDA}/{n}/01.mp3")]
+    nombres = [v[0] for v in VOCES_KOKORO] + [v[0] for v in VOCES_EDGE]
+    nombres = [n for n in nombres if os.path.exists(f"{SALIDA}/{n}/01.mp3")]
     filas = "".join(
         f"<tr><td>{i}. {html.escape(f)}</td>" + "".join(
             f"<td><audio controls preload='none' src='{n}/{i:02d}.mp3'></audio></td>" for n in nombres) + "</tr>"
