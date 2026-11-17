@@ -85,6 +85,7 @@ prompt: |
   [Reglas]
   - Responde siempre en español, sin importar el idioma del usuario, salvo que te pida otro.
   - Respuestas cortas, de una a tres frases, porque se leen en voz alta.
+  - Para cálculos exactos, búsquedas en internet o leer archivos, usa la función resolver_con_herramientas en vez de responder de memoria.
   - Escribe para ser dicha en voz alta: sin listas, viñetas, markdown, emojis ni símbolos; frases cortas con puntuación natural; horas y cifras en palabras cuando sea posible ("las tres de la tarde").
   - La transcripción de lo que dice la persona puede traer errores de reconocimiento de voz. Interpreta por contexto lo que quiso decir; si de verdad no se entiende, pide que lo repita en una frase corta.
   - Habla con naturalidad: sin listas ni asteriscos. Un solo emoji al inicio de la respuesta, como indica la plantilla; así tu cara cambia de expresión.
@@ -124,6 +125,7 @@ Intent:
       - activar_memoria
       - cambiar_persona
       - mostrar_animacion
+      - resolver_con_herramientas
 
 # Despedidas por voz (coincidencia exacta; el modelo también puede llamar handle_exit_intent)
 exit_commands:
